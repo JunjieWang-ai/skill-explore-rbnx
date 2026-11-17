@@ -16,8 +16,8 @@ cd "$PKG"
 BUILD="rbnx-build"
 CLEAN="${RBNX_BUILD_CLEAN:-}"
 IMG="${ROBONIX_EXPLORE_IMAGE:-robonix-explore}"
-ROS_BASE_IMAGE="${ROBONIX_EXPLORE_ROS_BASE_IMAGE:-robonix-ros:humble-ros-base}"
-UPSTREAM_ROS_BASE_IMAGE="ros:humble-ros-base"
+ROS_BASE_IMAGE="${ROBONIX_EXPLORE_ROS_BASE_IMAGE:-robonix-ros:jazzy-ros-base}"
+UPSTREAM_ROS_BASE_IMAGE="ros:jazzy-ros-base"
 
 if [[ "$CLEAN" == "1" ]]; then
     echo "[build] clean: removing $BUILD"

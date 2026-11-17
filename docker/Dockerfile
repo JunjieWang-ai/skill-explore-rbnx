@@ -6,7 +6,7 @@
 # atlas-resolved /map and drives via the navigation service's gRPC.
 # --network host + --ipc=host at runtime so DDS reaches /map and the
 # nav service is reachable on 127.0.0.1.
-ARG ROS_BASE_IMAGE=robonix-ros:humble-ros-base
+ARG ROS_BASE_IMAGE=robonix-ros:jazzy-ros-base
 FROM ${ROS_BASE_IMAGE}
 
 # ── TUNA mirrors ───────────────────────────────────────────────────
@@ -44,23 +44,27 @@ RUN apt-get update \
         python3-numpy \
         python3-scipy \
         python3-yaml \
-        ros-humble-tf2-ros \
-        ros-humble-tf-transformations \
-        ros-humble-rmw-zenoh-cpp \
+        ros-jazzy-tf2-ros \
+        ros-jazzy-tf-transformations \
+        ros-jazzy-rmw-zenoh-cpp \
  && rm -rf /var/lib/apt/lists/*
 
 # Python deps:
 #   grpcio/protobuf — atlas client
 #   MCP 1.x         — robonix-api still imports mcp.server.fastmcp.FastMCP
 #   fastmcp/uvicorn — MCP client/server support for the 3 skill tools
-RUN python3 -m pip install --no-cache-dir --upgrade \
-        'pip==25.3' 'setuptools==79.0.1' wheel \
- && python3 -m pip install --no-cache-dir \
+# No `pip install --upgrade pip` on noble: pip cannot uninstall the
+# Debian-owned apt pip (no RECORD: "Cannot uninstall pip 24.0") and that is a
+# guaranteed build failure. noble's pip 24.0 is sufficient.
+# numpy<2: tf2_py (this image's ROS python C extension) is built against the
+# apt numpy 1.26 ABI; an unpinned pip numpy 2.x shadows it on sys.path.
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+RUN python3 -m pip install --no-cache-dir \
         'grpcio==1.80.0' \
         'grpcio-tools==1.76.0' \
         'protobuf==6.33.6' \
         'pyyaml>=6.0' \
-        numpy \
+        'numpy<2' \
         'mcp>=1.28.1,<2' \
         'fastmcp>=3,<4' \
         uvicorn
